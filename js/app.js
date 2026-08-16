@@ -285,8 +285,7 @@ const $ = id => document.getElementById(id);
 const el = {
   bigTime:$('bigTime'), bigSec:$('bigSec'), bigLabel:$('bigLabel'), bigNote:$('bigNote'),
   mainBox:$('mainBox'), sunrise:$('sunriseTime'), weekday:$('dWeekday'),
-  greg:$('dGreg'), hijri:$('dHijri'), footerMid:$('footerMid'),
-  footerRight:$('footerRight'), mosque:$('mosqueName'), stage:$('stage')
+  greg:$('dGreg'), hijri:$('dHijri'), mosque:$('mosqueName'), stage:$('stage')
 };
 const cells = {};
 document.querySelectorAll('#strip .cell').forEach(c => cells[c.dataset.p] = {
@@ -303,14 +302,6 @@ function paintDay(){
   el.weekday.textContent = AR_DAYS[day.dow];
   el.greg.textContent = `${pad(day.d)} ${AR_MONTHS[day.m-1]} ${day.y}`;
   el.hijri.textContent = `${pad(day.hijri.d)} ${HIJRI_MONTHS[day.hijri.m-1]} ${day.hijri.y}`;
-
-  // the footer carries whatever matters most today
-  if(day.hijri.m === 9)
-    el.footerMid.textContent = `الإمساك ${hhmm(day.t.fajr)}  •  الإفطار ${hhmm(day.t.maghrib)}`;
-  else if(day.isFriday)
-    el.footerMid.textContent = `الجمعة: الخطبة ${CONFIG.jumuah.khutba}  •  الإقامة ${CONFIG.jumuah.iqama}`;
-  else
-    el.footerMid.textContent = 'مواقيت الصلاة';
 }
 
 function paintStrip(current){
@@ -347,27 +338,31 @@ function render(){
   const clockTxt = pad(n.h)+':'+pad(n.mi);
 
   if(st.phase === 'adhan'){
+    el.bigLabel.style.display = '';
     el.bigTime.textContent = clockTxt;
     el.bigSec.textContent  = ':'+pad(n.s);
     el.bigLabel.textContent = 'الأذان';
     el.bigNote.textContent  = `أذان ${st.label} — ${hhmm(st.currentSec/3600)}`;
   }
   else if(st.phase === 'iqama'){
+    el.bigLabel.style.display = '';
     el.bigTime.textContent = countdown(st.toIqama);
     el.bigSec.textContent  = '';
     el.bigLabel.textContent = 'الإقامة بعد';
     el.bigNote.textContent  = `صلاة ${st.label} — سُدّوا الفُرَج وأقيموا الصفوف`;
   }
   else if(st.phase === 'praying'){
+    el.bigLabel.style.display = '';
     el.bigTime.textContent = clockTxt;
     el.bigSec.textContent  = ':'+pad(n.s);
     el.bigLabel.textContent = 'الصلاة قائمة';
     el.bigNote.textContent  = 'يُرجى إسكات الهواتف الجوّالة';
   }
   else{
+    // idle: no bare prayer name under the clock — just the countdown to the next prayer
+    el.bigLabel.style.display = 'none';
     el.bigTime.textContent = clockTxt;
     el.bigSec.textContent  = ':'+pad(n.s);
-    el.bigLabel.textContent = st.label;
     el.bigNote.textContent  = `متبقي ${countdown(st.nextSec - nowSec)} ${toL(NAME[st.next])}`;
   }
 }
@@ -460,7 +455,6 @@ addEventListener('mousemove', () => {
 
 /* ── go ──────────────────────────────────────────────────────────── */
 el.mosque.textContent = CONFIG.mosqueName;
-el.footerRight.textContent = CONFIG.cityLabel;
 fit();
 render();
 requestAnimationFrame(() => el.stage.classList.add('ready'));
