@@ -2,14 +2,24 @@
    Fonts (local files — the display works with no internet access)
    ============================================================ */
 @font-face{
-  font-family:'Noto Kufi Arabic';font-style:normal;font-weight:100 900;font-display:block;
-  src:url(../assets/fonts/noto-kufi-arabic-arabic.woff2) format('woff2');
-  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC;
+  font-family:'Thmanyah Sans';font-style:normal;font-weight:300;font-display:block;
+  src:url(../assets/fonts/thmanyah-sans/thmanyahsans-Light.woff2) format('woff2');
 }
 @font-face{
-  font-family:'Noto Kufi Arabic';font-style:normal;font-weight:100 900;font-display:block;
-  src:url(../assets/fonts/noto-kufi-arabic-latin.woff2) format('woff2');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+2215,U+FEFF,U+FFFD;
+  font-family:'Thmanyah Sans';font-style:normal;font-weight:400;font-display:block;
+  src:url(../assets/fonts/thmanyah-sans/thmanyahsans-Regular.woff2) format('woff2');
+}
+@font-face{
+  font-family:'Thmanyah Sans';font-style:normal;font-weight:500;font-display:block;
+  src:url(../assets/fonts/thmanyah-sans/thmanyahsans-Medium.woff2) format('woff2');
+}
+@font-face{
+  font-family:'Thmanyah Sans';font-style:normal;font-weight:600 700;font-display:block;
+  src:url(../assets/fonts/thmanyah-sans/thmanyahsans-Bold.woff2) format('woff2');
+}
+@font-face{
+  font-family:'Thmanyah Sans';font-style:normal;font-weight:800 900;font-display:block;
+  src:url(../assets/fonts/thmanyah-sans/thmanyahsans-Black.woff2) format('woff2');
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -22,7 +32,7 @@ body.pointer{cursor:default}
 #stage{
   width:1920px;height:1080px;transform-origin:50% 50%;
 }
-.insat-dash *{box-sizing:border-box;font-family:'Noto Kufi Arabic','Archivo',Helvetica,Arial,sans-serif}
+.insat-dash *{box-sizing:border-box;font-family:'Thmanyah Sans','Archivo',Helvetica,Arial,sans-serif}
 .tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
 /* Cross-fade used whenever the centre panel changes state */
@@ -33,7 +43,7 @@ body.pointer{cursor:default}
 #panel{
   position:fixed;inset:0;background:rgba(255,255,255,.94);z-index:50;
   display:none;align-items:center;justify-content:center;
-  font-family:'Noto Kufi Arabic',Helvetica,Arial,sans-serif;
+  font-family:'Thmanyah Sans',Helvetica,Arial,sans-serif;
 }
 #panel.on{display:flex}
 #panelBox{
@@ -62,7 +72,7 @@ body.pointer{cursor:default}
 #demo{
   position:fixed;left:16px;bottom:16px;z-index:40;display:none;
   border:3px solid #000;background:#fff;color:#8B1E23;padding:6px 14px;
-  font:800 14px 'Noto Kufi Arabic',Helvetica,Arial,sans-serif;letter-spacing:1px
+  font:800 14px 'Thmanyah Sans',Helvetica,Arial,sans-serif;letter-spacing:1px
 }
 #demo.on{display:block}
 #stage.ready{transition:transform 1.2s ease}
