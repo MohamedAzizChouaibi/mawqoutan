@@ -1,0 +1,69 @@
+/* ============================================================
+   Fonts (local files — the display works with no internet access)
+   ============================================================ */
+@font-face{
+  font-family:'Noto Kufi Arabic';font-style:normal;font-weight:100 900;font-display:block;
+  src:url(../assets/fonts/noto-kufi-arabic-arabic.woff2) format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC;
+}
+@font-face{
+  font-family:'Noto Kufi Arabic';font-style:normal;font-weight:100 900;font-display:block;
+  src:url(../assets/fonts/noto-kufi-arabic-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#FFFFFF;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;cursor:none}
+body.pointer{cursor:default}
+
+/* Stage: the artwork is authored at exactly 1920x1080 and scaled to fit
+   whatever screen it is plugged into. Nothing inside is resized. */
+#stage{
+  width:1920px;height:1080px;transform-origin:50% 50%;
+}
+.insat-dash *{box-sizing:border-box;font-family:'Noto Kufi Arabic','Archivo',Helvetica,Arial,sans-serif}
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* Cross-fade used whenever the centre panel changes state */
+.fade{transition:opacity .35s ease}
+.fade.out{opacity:0}
+
+/* ---------- settings / help panel (hidden until "S") ---------- */
+#panel{
+  position:fixed;inset:0;background:rgba(255,255,255,.94);z-index:50;
+  display:none;align-items:center;justify-content:center;
+  font-family:'Noto Kufi Arabic',Helvetica,Arial,sans-serif;
+}
+#panel.on{display:flex}
+#panelBox{
+  width:min(900px,92vw);max-height:88vh;overflow:auto;background:#FFFFFF;
+  border:8px solid #000000;padding:34px 40px;
+}
+#panelBox h2{font-size:26px;font-weight:800;color:#000;margin-bottom:6px}
+#panelBox .rule{width:120px;height:5px;background:#8B1E23;margin-bottom:22px}
+#panelBox h3{font-size:17px;font-weight:800;color:#8B1E23;margin:22px 0 10px;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:13px;font-weight:700;color:#2E415B}
+.fld input,.fld select{
+  border:3px solid #000;padding:8px 10px;font-size:15px;font-weight:700;
+  font-family:inherit;background:#fff;color:#000;width:100%
+}
+.keys{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;font-size:14px;color:#000}
+.keys b{display:inline-block;min-width:34px;border:2px solid #000;padding:1px 7px;margin-inline-end:8px;font-size:13px;text-align:center}
+#panelActions{display:flex;gap:12px;margin-top:26px}
+.btn{border:3px solid #000;background:#fff;color:#000;font-family:inherit;font-weight:800;
+     font-size:15px;padding:10px 22px;cursor:pointer}
+.btn.primary{background:#8B1E23;color:#fff;border-color:#000}
+#note{font-size:13px;color:#2E415B;margin-top:14px;line-height:1.6}
+
+/* demo badge — only visible while the clock is being simulated */
+#demo{
+  position:fixed;left:16px;bottom:16px;z-index:40;display:none;
+  border:3px solid #000;background:#fff;color:#8B1E23;padding:6px 14px;
+  font:800 14px 'Noto Kufi Arabic',Helvetica,Arial,sans-serif;letter-spacing:1px
+}
+#demo.on{display:block}
+#stage.ready{transition:transform 1.2s ease}
+@media (prefers-reduced-motion:reduce){#stage,#stage.ready,.fade{transition:none}}

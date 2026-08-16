@@ -1,0 +1,9 @@
+{
+  "name": "mawqoutan",
+  "version": "1.0.0",
+  "description": "INSAT prayer-times kiosk display",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -l 8080 ."
+  }
+}
