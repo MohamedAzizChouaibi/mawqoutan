@@ -30,14 +30,13 @@ const CONFIG = {
      printed table exactly. */
   offsets : { fajr:0, sunrise:0, dhuhr:0, asr:0, maghrib:0, isha:0 },
 
-  /* Minutes between adhan and iqama, per prayer. */
-  iqama : { fajr:20, dhuhr:10, asr:10, maghrib:5, isha:10 },
-
   adhanMinutes : 3,        // how long the "الأذان" screen stays up
   prayerMinutes: { fajr:12, dhuhr:9, asr:9, maghrib:9, isha:11 },
 
-  /* Friday — Jumu'ah replaces Dhuhr. */
-  jumuah : { khutba:'12:30', iqama:'12:50' },
+  /* Friday — Jumu'ah replaces Dhuhr. khutba: sermon start, prayer: when
+     the Jumu'ah prayer itself begins. There is no iqama on this board —
+     only the adhan call. */
+  jumuah : { khutba:'12:30', prayer:'12:50' },
 
   hijriOffset : 0,         // ±days, to match the local moon sighting
   chime : false,           // short tone at each adhan (key "M")
@@ -239,8 +238,8 @@ function buildDay(n){
   const at = {};
   for(const k of ORDER) at[k] = minOf(t[k])*60;
   if(isFriday){
-    const [hh,mm] = CONFIG.jumuah.iqama.split(':').map(Number);
-    at.jumuahIqama = (hh*60+mm)*60;
+    const [hh,mm] = CONFIG.jumuah.prayer.split(':').map(Number);
+    at.jumuahPrayer = (hh*60+mm)*60;
   }
   return { key:`${n.y}-${n.m}-${n.d}`, t, at, tom, yst, isFriday,
            hijri: hijriParts(n.y, n.m, n.d), dow:n.dow, y:n.y, m:n.m, d:n.d };
@@ -259,22 +258,20 @@ function currentState(nowSec){
   for(const k of ORDER){ if(at[k] > nowSec){ next = k; nextSec = at[k]; break; } }
   if(!next){ next = 'fajr'; nextSec = minOf(day.tom.fajr)*60 + 86400; }
 
-  // phase of the current prayer: adhan → iqama → prayer → idle
+  // phase of the current prayer: adhan → praying → idle (no iqama on this board)
   const since = nowSec - currentSec;
-  const iqamaMin = (day.isFriday && current === 'dhuhr')
-        ? Math.max(1, (at.jumuahIqama - at.dhuhr)/60)
-        : (CONFIG.iqama[current] || 10);
-  const adhanSec  = CONFIG.adhanMinutes*60;
-  const iqamaSec  = iqamaMin*60;
-  const prayerSec = iqamaSec + (CONFIG.prayerMinutes[current] || 9)*60;
+  const adhanSec = CONFIG.adhanMinutes*60;
+  // Friday: the Jumu'ah prayer starts once the khutba ends, not right after the adhan.
+  const prayStartSec = (day.isFriday && current === 'dhuhr')
+        ? Math.max(adhanSec, at.jumuahPrayer - at.dhuhr)
+        : adhanSec;
+  const prayEndSec = prayStartSec + (CONFIG.prayerMinutes[current] || 9)*60;
 
   let phase = 'idle';
-  if(since >= 0 && since < adhanSec)            phase = 'adhan';
-  else if(since >= adhanSec && since < iqamaSec) phase = 'iqama';
-  else if(since >= iqamaSec && since < prayerSec) phase = 'praying';
+  if(since >= 0 && since < adhanSec)             phase = 'adhan';
+  else if(since >= adhanSec && since < prayEndSec) phase = 'praying';
 
-  return { current, currentSec, next, nextSec, phase,
-           toIqama: iqamaSec - since, label: labelOf(current) };
+  return { current, currentSec, next, nextSec, phase, label: labelOf(current) };
 }
 const labelOf = k => (day.isFriday && k === 'dhuhr') ? NAME.jumuah : NAME[k];
 
@@ -344,13 +341,6 @@ function render(){
     el.bigLabel.textContent = 'الأذان';
     el.bigNote.textContent  = `أذان ${st.label} — ${hhmm(st.currentSec/3600)}`;
   }
-  else if(st.phase === 'iqama'){
-    el.bigLabel.style.display = '';
-    el.bigTime.textContent = countdown(st.toIqama);
-    el.bigSec.textContent  = '';
-    el.bigLabel.textContent = 'الإقامة بعد';
-    el.bigNote.textContent  = `صلاة ${st.label} — سُدّوا الفُرَج وأقيموا الصفوف`;
-  }
   else if(st.phase === 'praying'){
     el.bigLabel.style.display = '';
     el.bigTime.textContent = clockTxt;
@@ -406,8 +396,7 @@ const F = {
   f_fajr:['method','fajr'], f_isha:['method','isha'], f_asr:['method','asrFactor'],
   o_fajr:['offsets','fajr'], o_sunrise:['offsets','sunrise'], o_dhuhr:['offsets','dhuhr'],
   o_asr:['offsets','asr'], o_maghrib:['offsets','maghrib'], o_isha:['offsets','isha'],
-  q_fajr:['iqama','fajr'], q_dhuhr:['iqama','dhuhr'], q_asr:['iqama','asr'],
-  q_maghrib:['iqama','maghrib'], q_isha:['iqama','isha'], q_adhan:['adhanMinutes']
+  q_adhan:['adhanMinutes']
 };
 const dig = path => path.reduce((o,k) => o[k], CONFIG);
 function loadPanel(){ for(const id in F) $(id).value = dig(F[id]); }
