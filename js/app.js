@@ -214,6 +214,8 @@ const pad = n => String(n).padStart(2,'0');
 const hhmm = hours => { const t = Math.round(fix(hours,24)*60); return pad(Math.floor(t/60)%24)+':'+pad(t%60); };
 const minOf = hours => Math.round(fix(hours,24)*60);   // whole minutes after midnight
 
+const URGENT_SEC = 5*60;   // switch to the full-screen countdown this close to a prayer
+
 function countdown(sec){
   sec = Math.max(0, Math.round(sec));
   const h = Math.floor(sec/3600);
@@ -270,6 +272,7 @@ function currentState(nowSec){
   let phase = 'idle';
   if(since >= 0 && since < adhanSec)             phase = 'adhan';
   else if(since >= adhanSec && since < prayEndSec) phase = 'praying';
+  else if(nextSec - nowSec <= URGENT_SEC)        phase = 'soon';
 
   return { current, currentSec, next, nextSec, phase, label: labelOf(current) };
 }
@@ -282,7 +285,8 @@ const $ = id => document.getElementById(id);
 const el = {
   bigTime:$('bigTime'), bigSec:$('bigSec'), bigLabel:$('bigLabel'), bigNote:$('bigNote'),
   mainBox:$('mainBox'), sunrise:$('sunriseTime'), weekday:$('dWeekday'),
-  greg:$('dGreg'), hijri:$('dHijri'), mosque:$('mosqueName'), stage:$('stage')
+  greg:$('dGreg'), hijri:$('dHijri'), mosque:$('mosqueName'), stage:$('stage'),
+  dash:$('dash'), urgentClock:$('urgentClock')
 };
 const cells = {};
 document.querySelectorAll('#strip .cell').forEach(c => cells[c.dataset.p] = {
@@ -329,10 +333,12 @@ function render(){
       setTimeout(() => el.mainBox.classList.remove('out'), 350);
     }
     if(st.phase === 'adhan' && CONFIG.chime) chime();
+    el.dash.classList.toggle('urgent', st.phase === 'soon');
     lastPhase = st.phase;
   }
 
   const clockTxt = pad(n.h)+':'+pad(n.mi);
+  el.urgentClock.textContent = clockTxt;
 
   if(st.phase === 'adhan'){
     el.bigLabel.style.display = '';
@@ -347,6 +353,14 @@ function render(){
     el.bigSec.textContent  = ':'+pad(n.s);
     el.bigLabel.textContent = 'الصلاة قائمة';
     el.bigNote.textContent  = 'يُرجى إسكات الهواتف الجوّالة';
+  }
+  else if(st.phase === 'soon'){
+    // prayer imminent: the whole screen becomes the countdown + the prayer name
+    el.bigLabel.style.display = '';
+    el.bigTime.textContent = countdown(st.nextSec - nowSec);
+    el.bigSec.textContent  = '';
+    el.bigLabel.textContent = labelOf(st.next);
+    el.bigNote.textContent  = 'متبقي';
   }
   else{
     // idle: no bare prayer name under the clock — just the countdown to the next prayer
