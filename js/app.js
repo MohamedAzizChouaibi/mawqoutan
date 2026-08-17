@@ -277,6 +277,8 @@ function currentState(nowSec){
   return { current, currentSec, next, nextSec, phase, label: labelOf(current) };
 }
 const labelOf = k => (day.isFriday && k === 'dhuhr') ? NAME.jumuah : NAME[k];
+// caption for the imminent-prayer countdown — sunrise has no adhan of its own
+const untilLabel = k => k === 'sunrise' ? `متبقى على ${NAME.sunrise}` : `متبقى على أذان ${labelOf(k)}`;
 
 /* ════════════════════════════════════════════════════════════════════
    6. Rendering
@@ -355,12 +357,11 @@ function render(){
     el.bigNote.textContent  = 'يُرجى إسكات الهواتف الجوّالة';
   }
   else if(st.phase === 'soon'){
-    // prayer imminent: the whole screen becomes the countdown + the prayer name
-    el.bigLabel.style.display = '';
+    // prayer imminent: the whole screen becomes the countdown, with the
+    // prayer name announced in a caption above it
     el.bigTime.textContent = countdown(st.nextSec - nowSec);
     el.bigSec.textContent  = '';
-    el.bigLabel.textContent = labelOf(st.next);
-    el.bigNote.textContent  = 'متبقي';
+    el.bigNote.textContent  = untilLabel(st.next);
   }
   else{
     // idle: no bare prayer name under the clock — just the countdown to the next prayer
