@@ -69,27 +69,41 @@ body.pointer{cursor:default}
 #note{font-size:13px;color:#2E415B;margin-top:14px;line-height:1.6}
 
 /* ---------- "prayer imminent" full-screen countdown (last 5 minutes) ----------
-   Shown once the next prayer is close: only the countdown, the prayer name
-   and a small clock (top-right, in the header's usual spot) remain — the
-   strip, sunrise box and date box step aside, and the INSAT logo stays put. */
+   Shown once the next prayer is close: a caption ("متبقى على أذان ...") sits
+   above a huge countdown, a bigger clock takes the header's usual top-right
+   spot, and the INSAT logo drops below the countdown. The strip, sunrise box
+   and date box step aside. */
 .insat-dash.urgent #mosqueWrap{display:none!important}
-.insat-dash.urgent #urgentClock{display:block!important}
-.insat-dash.urgent #headerRow{border-bottom:none}
+.insat-dash.urgent #urgentClock{display:block!important;font-size:72px!important}
+.insat-dash.urgent #headerRow{border-bottom:none;padding-bottom:16px!important}
 .insat-dash.urgent #strip,
 .insat-dash.urgent #sunriseBox,
 .insat-dash.urgent #dateBox{display:none!important}
-.insat-dash.urgent #mainArea{justify-content:flex-start;padding-top:150px!important}
+.insat-dash.urgent #mainArea{justify-content:flex-start;padding-top:30px!important;gap:36px!important}
+.insat-dash.urgent #logo{
+  position:static!important;
+  left:auto!important;top:auto!important;
+  order:2;
+  height:250px!important;width:401px!important;
+  margin:0!important;
+}
 .insat-dash.urgent #mainBox{
   border:none!important;
   width:100%!important;
   min-height:0!important;
-  padding:10px 40px!important;
-  gap:22px!important;
+  padding:0 40px!important;
+  gap:18px!important;
 }
 .insat-dash.urgent #bigTime{font-size:380px!important;letter-spacing:4px}
 .insat-dash.urgent #bigSec{display:none!important}
-.insat-dash.urgent #bigLabel{display:block!important;font-size:110px!important}
-.insat-dash.urgent #bigNote{font-size:38px!important}
+.insat-dash.urgent #bigDivider{display:none!important}
+.insat-dash.urgent #bigLabel{display:none!important}
+.insat-dash.urgent #bigNote{
+  order:-1;
+  display:block!important;
+  font-size:52px!important;
+  color:#8B1E23!important;
+}
 
 /* demo badge — only visible while the clock is being simulated */
 #demo{
