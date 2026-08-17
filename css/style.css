@@ -84,7 +84,8 @@ body.pointer{cursor:default}
   position:static!important;
   left:auto!important;top:auto!important;
   order:2;
-  height:250px!important;width:401px!important;
+  height:250px!important;width:250px!important;
+  border-radius:50%!important;
   margin:0!important;
 }
 .insat-dash.urgent #mainBox{
