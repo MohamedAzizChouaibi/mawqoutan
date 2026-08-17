@@ -87,8 +87,31 @@ function sunPosition(jd){
   return { decl: asin(sin(e)*sin(L)), eqt };
 }
 
+/* Look up an exact time table for the day, e.g. a Mawaqit CSV export
+   (see js/prayerTimes2026.js). Returns hours-after-midnight per prayer,
+   or null when the day isn't covered and the astronomical model below
+   should be used instead. */
+function tableTimes(y, m, d){
+  const key = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  const row = (typeof PRAYER_DATA_2026 !== 'undefined') && PRAYER_DATA_2026[key];
+  if(!row) return null;
+  const out = {};
+  ORDER.forEach((k, i) => {
+    const [hh, mm] = row[i].split(':').map(Number);
+    out[k] = hh + mm/60;
+  });
+  return out;
+}
+
 /* Prayer times, in hours after local midnight, for one calendar day. */
 function computeTimes(y, m, d, cfg){
+  const table = tableTimes(y, m, d);
+  if(table){
+    const out = {};
+    for(const k of ORDER) out[k] = table[k] + (cfg.offsets[k]||0)/60;
+    return out;
+  }
+
   const lat = cfg.lat, lng = cfg.lng, tz = cfg.timezone;
   const jd0 = julianDay(y,m,d) - lng/(15*24);
   const at = h => sunPosition(jd0 + h/24);
