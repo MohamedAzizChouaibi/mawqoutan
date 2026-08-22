@@ -312,7 +312,8 @@ const el = {
   mainBox:$('mainBox'), sunrise:$('sunriseTime'), weekday:$('dWeekday'),
   greg:$('dGreg'), hijri:$('dHijri'), mosque:$('mosqueName'), stage:$('stage'),
   dash:$('dash'), urgentClock:$('urgentClock'),
-  hadithText:$('hadithText'), hadithCite:$('hadithCite')
+  hadithText:$('hadithText'), hadithCite:$('hadithCite'),
+  hadithClock:$('hadithClock'), hadithNextLabel:$('hadithNextLabel'), hadithNextTime:$('hadithNextTime')
 };
 const cells = {};
 document.querySelectorAll('#strip .cell').forEach(c => cells[c.dataset.p] = {
@@ -367,6 +368,9 @@ function render(){
 
   const clockTxt = pad(n.h)+':'+pad(n.mi);
   el.urgentClock.textContent = clockTxt;
+  el.hadithClock.textContent = clockTxt;
+  el.hadithNextLabel.textContent = untilLabel(st.next);
+  el.hadithNextTime.textContent = countdown(st.nextSec - nowSec);
 
   if(st.phase === 'adhan'){
     el.bigLabel.style.display = '';
@@ -458,11 +462,11 @@ async function loadHadiths(){
 }
 
 function hadithFontSize(len){
-  if(len <= 100) return '56px';
-  if(len <= 200) return '48px';
-  if(len <= 350) return '40px';
-  if(len <= 500) return '34px';
-  return '28px';
+  if(len <= 100) return '78px';
+  if(len <= 200) return '64px';
+  if(len <= 350) return '52px';
+  if(len <= 500) return '44px';
+  return '36px';
 }
 
 function pickHadith(){
