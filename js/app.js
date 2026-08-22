@@ -461,12 +461,19 @@ async function loadHadiths(){
   }
 }
 
+/* Finer buckets than a flat doubling: short hadiths get close to 2x (there's
+   room), longer ones scale up by less so the longest hadith in the CSV still
+   fits the overlay without clipping. Sizes are the largest that measured safe
+   for the longest hadith in each length range. */
 function hadithFontSize(len){
-  if(len <= 100) return '104px';
-  if(len <= 200) return '84px';
-  if(len <= 350) return '68px';
-  if(len <= 500) return '56px';
-  return '46px';
+  if(len <= 40)  return '176px';
+  if(len <= 70)  return '150px';
+  if(len <= 100) return '116px';
+  if(len <= 140) return '104px';
+  if(len <= 230) return '88px';
+  if(len <= 350) return '72px';
+  if(len <= 500) return '60px';
+  return '50px';
 }
 
 function pickHadith(){
