@@ -462,11 +462,11 @@ async function loadHadiths(){
 }
 
 function hadithFontSize(len){
-  if(len <= 100) return '78px';
-  if(len <= 200) return '64px';
-  if(len <= 350) return '52px';
-  if(len <= 500) return '44px';
-  return '36px';
+  if(len <= 100) return '104px';
+  if(len <= 200) return '84px';
+  if(len <= 350) return '68px';
+  if(len <= 500) return '56px';
+  return '46px';
 }
 
 function pickHadith(){
@@ -477,8 +477,7 @@ function pickHadith(){
   const h = HADITHS[i];
   el.hadithText.textContent = h.text;
   el.hadithText.style.fontSize = hadithFontSize(h.text.length);
-  el.hadithCite.textContent = (h.narrator && h.narrator !== '-')
-    ? `${h.narrator} — ${h.source}` : h.source;
+  el.hadithCite.textContent = h.source;
   return true;
 }
 

@@ -114,26 +114,26 @@ body.pointer{cursor:default}
 #hadithOverlay{
   position:absolute;inset:0;background:#FFFFFF;z-index:20;
   display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:38px;padding:180px 90px 90px;text-align:center;
+  gap:30px;padding:190px 50px 60px;text-align:center;
 }
 .insat-dash.hadith-on #hadithOverlay{display:flex}
 #hadithMark{font-size:34px;font-weight:800;letter-spacing:4px;color:#8B1E23}
-#hadithText{font-size:56px;font-weight:700;line-height:1.7;color:#000000;max-width:1740px}
+#hadithText{font-size:56px;font-weight:700;line-height:1.6;color:#000000;max-width:1820px}
 #hadithDivider{width:150px;height:5px;background:#CDBB8C}
 #hadithCite{font-size:32px;font-weight:600;color:#2E415B;letter-spacing:1px}
 
 /* current-time / next-prayer-countdown corner boxes, shown while a hadith is up */
 #hadithClockBox,#hadithNextBox{
-  position:absolute;top:56px;border:5px solid #000000;
-  padding:16px 34px;display:flex;flex-direction:column;align-items:center;
-  gap:6px;text-align:center;background:#FFFFFF;
+  position:absolute;top:44px;border:5px solid #000000;
+  padding:18px 40px;display:flex;flex-direction:column;align-items:center;
+  gap:8px;text-align:center;background:#FFFFFF;
 }
-#hadithClockBox{left:56px}
-#hadithNextBox{right:56px;max-width:620px}
-#hadithClockBox .lbl,#hadithNextBox .lbl{font-size:26px;font-weight:700;color:#2E415B;letter-spacing:1px}
+#hadithClockBox{left:44px}
+#hadithNextBox{right:44px;max-width:700px}
+#hadithClockBox .lbl,#hadithNextBox .lbl{font-size:32px;font-weight:700;color:#2E415B;letter-spacing:1px}
 #hadithClockBox .lbl{white-space:nowrap}
-#hadithClock{font-size:64px;font-weight:800;color:#000000;letter-spacing:1px}
-#hadithNextTime{font-size:56px;font-weight:800;color:#8B1E23;letter-spacing:1px}
+#hadithClock{font-size:96px;font-weight:800;color:#000000;letter-spacing:1px}
+#hadithNextTime{font-size:88px;font-weight:800;color:#8B1E23;letter-spacing:1px}
 
 /* demo badge — only visible while the clock is being simulated */
 #demo{
