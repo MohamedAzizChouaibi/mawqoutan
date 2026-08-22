@@ -380,11 +380,10 @@ function render(){
     el.bigNote.textContent  = `أذان ${st.label} — ${hhmm(st.currentSec/3600)}`;
   }
   else if(st.phase === 'praying'){
-    el.bigLabel.style.display = '';
+    el.bigLabel.style.display = 'none';
     el.bigTime.textContent = clockTxt;
     el.bigSec.textContent  = ':'+pad(n.s);
-    el.bigLabel.textContent = 'الصلاة قائمة';
-    el.bigNote.textContent  = 'يُرجى إسكات الهواتف الجوّالة';
+    el.bigNote.textContent  = '';
   }
   else if(st.phase === 'soon'){
     // prayer imminent: the whole screen becomes the countdown, with the
