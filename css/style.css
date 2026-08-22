@@ -32,6 +32,7 @@ body.pointer{cursor:default}
 #stage{
   width:1920px;height:1080px;transform-origin:50% 50%;
 }
+.insat-dash{position:relative}
 .insat-dash *{box-sizing:border-box;font-family:'Thmanyah Sans','Archivo',Helvetica,Arial,sans-serif}
 .tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
@@ -105,6 +106,21 @@ body.pointer{cursor:default}
   font-size:52px!important;
   color:#8B1E23!important;
 }
+
+/* ---------- hadith break — full-screen takeover between prayers ----------
+   Shown for one minute every 5–15 minutes while idle and more than 20
+   minutes from the next prayer; hidden the instant that stops being true
+   (adhan, iqama, or the last-5-minutes countdown all take priority). */
+#hadithOverlay{
+  position:absolute;inset:0;background:#FFFFFF;z-index:20;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:44px;padding:110px 150px;text-align:center;
+}
+.insat-dash.hadith-on #hadithOverlay{display:flex}
+#hadithMark{font-size:32px;font-weight:800;letter-spacing:4px;color:#8B1E23}
+#hadithText{font-size:56px;font-weight:700;line-height:1.75;color:#000000;max-width:1600px}
+#hadithDivider{width:140px;height:5px;background:#CDBB8C}
+#hadithCite{font-size:30px;font-weight:600;color:#2E415B;letter-spacing:1px}
 
 /* demo badge — only visible while the clock is being simulated */
 #demo{
