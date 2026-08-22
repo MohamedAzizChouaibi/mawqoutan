@@ -311,7 +311,8 @@ const el = {
   bigTime:$('bigTime'), bigSec:$('bigSec'), bigLabel:$('bigLabel'), bigNote:$('bigNote'),
   mainBox:$('mainBox'), sunrise:$('sunriseTime'), weekday:$('dWeekday'),
   greg:$('dGreg'), hijri:$('dHijri'), mosque:$('mosqueName'), stage:$('stage'),
-  dash:$('dash'), urgentClock:$('urgentClock')
+  dash:$('dash'), urgentClock:$('urgentClock'),
+  hadithText:$('hadithText'), hadithCite:$('hadithCite')
 };
 const cells = {};
 document.querySelectorAll('#strip .cell').forEach(c => cells[c.dataset.p] = {
@@ -348,6 +349,8 @@ function render(){
 
   const nowSec = n.h*3600 + n.mi*60 + n.s;
   const st = currentState(nowSec);
+
+  updateHadith(clock.nowMs(), nowSec, st);
 
   if(st.current !== lastCurrent){ paintStrip(st.current); lastCurrent = st.current; }
 
@@ -392,6 +395,61 @@ function render(){
     el.bigTime.textContent = clockTxt;
     el.bigSec.textContent  = ':'+pad(n.s);
     el.bigNote.textContent  = `متبقي ${countdown(st.nextSec - nowSec)} ${toL(NAME[st.next])}`;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   6b. Hadith break — between prayers, until 20 minutes before the next
+       one, a random hadith takes over the screen every 5–15 minutes and
+       stays up for one minute. Timed off clock.nowMs() (epoch ms, honours
+       the demo-mode speed-up and manual offset) rather than the day's
+       seconds-of-day clock, so it survives midnight cleanly.
+   ════════════════════════════════════════════════════════════════════ */
+const HADITH_GAP_MIN = 20;                 // stay quiet this close to the next prayer
+const HADITH_SHOW_MS = 60*1000;            // how long each hadith stays on screen
+const randHadithGapMs = () => (5 + Math.random()*10)*60*1000;   // 5–15 minutes
+
+const hadith = { active:false, until:0, nextAt:0, lastIdx:-1 };
+
+function hadithFontSize(len){
+  if(len <= 100) return '56px';
+  if(len <= 200) return '48px';
+  if(len <= 350) return '40px';
+  if(len <= 500) return '34px';
+  return '28px';
+}
+
+function pickHadith(){
+  if(typeof HADITHS === 'undefined' || !HADITHS.length) return false;
+  let i = Math.floor(Math.random()*HADITHS.length);
+  if(HADITHS.length > 1 && i === hadith.lastIdx) i = (i+1) % HADITHS.length;
+  hadith.lastIdx = i;
+  const h = HADITHS[i];
+  el.hadithText.textContent = h.text;
+  el.hadithText.style.fontSize = hadithFontSize(h.text.length);
+  el.hadithCite.textContent = (h.narrator && h.narrator !== '-')
+    ? `${h.narrator} — ${h.source}` : h.source;
+  return true;
+}
+
+function updateHadith(nowMs, nowSec, st){
+  const canShow = st.phase === 'idle' && (st.nextSec - nowSec) > HADITH_GAP_MIN*60;
+
+  if(hadith.active){
+    if(!canShow || nowMs >= hadith.until){
+      hadith.active = false;
+      el.dash.classList.remove('hadith-on');
+      hadith.nextAt = nowMs + randHadithGapMs();
+    }
+    return;
+  }
+
+  if(!hadith.nextAt){ hadith.nextAt = nowMs + randHadithGapMs(); return; }
+
+  if(canShow && nowMs >= hadith.nextAt && pickHadith()){
+    hadith.active = true;
+    hadith.until = nowMs + HADITH_SHOW_MS;
+    el.dash.classList.add('hadith-on');
   }
 }
 
