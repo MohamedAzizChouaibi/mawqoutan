@@ -544,17 +544,14 @@ function chime(){
    ════════════════════════════════════════════════════════════════════ */
 let drift = 0;
 function fit(){
-  // Uniform fit would letterbox whichever axis doesn't match the 16:9
-  // design exactly. Reclaim 90% of that letterboxed margin by stretching
-  // just the free axis past the uniform scale, leaving only a thin 10%
-  // margin instead of the full gap.
-  const sxFull = innerWidth/1920, syFull = innerHeight/1080;
-  const s = Math.min(sxFull, syFull);
-  const sx = s + (sxFull - s) * 0.9;
-  const sy = s + (syFull - s) * 0.9;
+  // #stage is a real full-screen frame (its background + border sit at the
+  // true screen edges on any aspect ratio). The 1920x1080 artwork inside
+  // is uniformly scaled to fit that frame and centered — a single scale
+  // factor, never stretched, so nothing looks distorted.
+  const s = Math.min(el.stage.clientWidth/1920, el.stage.clientHeight/1080);
   const dx = CONFIG.burnInGuard ? [0,3,0,-3][drift%4] : 0;
   const dy = CONFIG.burnInGuard ? [0,-3,3,0][drift%4] : 0;
-  el.stage.style.transform = `translate(${dx}px,${dy}px) scale(${sx}, ${sy})`;
+  el.dash.style.transform = `translate(${dx}px,${dy}px) scale(${s})`;
 }
 addEventListener('resize', fit);
 setInterval(() => { drift++; fit(); }, 4*60*1000);
@@ -620,7 +617,7 @@ el.mosque.textContent = CONFIG.mosqueName;
 loadHadiths();
 fit();
 render();
-requestAnimationFrame(() => el.stage.classList.add('ready'));
+requestAnimationFrame(() => el.dash.classList.add('ready'));
 /* tick on the second boundary so the seconds never stutter */
 (function tick(){
   render();
