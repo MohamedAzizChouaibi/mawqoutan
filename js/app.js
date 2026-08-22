@@ -544,10 +544,17 @@ function chime(){
    ════════════════════════════════════════════════════════════════════ */
 let drift = 0;
 function fit(){
-  const s = Math.min(innerWidth/1920, innerHeight/1080);
+  // Uniform fit would letterbox whichever axis doesn't match the 16:9
+  // design exactly. Reclaim 90% of that letterboxed margin by stretching
+  // just the free axis past the uniform scale, leaving only a thin 10%
+  // margin instead of the full gap.
+  const sxFull = innerWidth/1920, syFull = innerHeight/1080;
+  const s = Math.min(sxFull, syFull);
+  const sx = s + (sxFull - s) * 0.9;
+  const sy = s + (syFull - s) * 0.9;
   const dx = CONFIG.burnInGuard ? [0,3,0,-3][drift%4] : 0;
   const dy = CONFIG.burnInGuard ? [0,-3,3,0][drift%4] : 0;
-  el.stage.style.transform = `translate(${dx}px,${dy}px) scale(${s})`;
+  el.stage.style.transform = `translate(${dx}px,${dy}px) scale(${sx}, ${sy})`;
 }
 addEventListener('resize', fit);
 setInterval(() => { drift++; fit(); }, 4*60*1000);
