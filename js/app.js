@@ -420,7 +420,7 @@ const HADITH_GAP_MIN = 20;                 // stay quiet this close to the next 
 const HADITH_SHOW_MS = 60*1000;            // how long each hadith stays on screen
 const randHadithGapMs = () => (5 + Math.random()*10)*60*1000;   // 5–15 minutes
 
-const hadith = { active:false, until:0, nextAt:0, lastIdx:-1 };
+const hadith = { active:false, forced:false, until:0, nextAt:0, lastIdx:-1 };
 let HADITHS = [];
 
 /* Minimal RFC4180 CSV parser — quoted fields, "" escapes, no external deps. */
@@ -488,12 +488,25 @@ function pickHadith(){
   return true;
 }
 
+/* Forces a hadith on screen right now, ignoring the idle/20-minute gating —
+   for testing from the settings panel (button or key "H") rather than
+   waiting for the real schedule to line up. */
+function testHadith(){
+  if(!pickHadith()) return;
+  hadith.active = true;
+  hadith.forced = true;
+  hadith.until = clock.nowMs() + HADITH_SHOW_MS;
+  el.dash.classList.add('hadith-on');
+  togglePanel(false);
+}
+
 function updateHadith(nowMs, nowSec, st){
   const canShow = st.phase === 'idle' && (st.nextSec - nowSec) > HADITH_GAP_MIN*60;
 
   if(hadith.active){
-    if(!canShow || nowMs >= hadith.until){
+    if(nowMs >= hadith.until || (!hadith.forced && !canShow)){
       hadith.active = false;
+      hadith.forced = false;
       el.dash.classList.remove('hadith-on');
       hadith.nextAt = nowMs + randHadithGapMs();
     }
@@ -566,6 +579,7 @@ function togglePanel(on){
   if(on) loadPanel();
 }
 $('btnApply').onclick = () => { applyPanel(); togglePanel(false); };
+$('btnTestHadith').onclick = testHadith;
 $('btnClose').onclick = () => togglePanel(false);
 
 const demoBadge = $('demo'), demoSpeed = $('demoSpeed');
@@ -584,6 +598,7 @@ addEventListener('keydown', e => {
   else if(k === 'd'){ clock.setSpeed(clock.speed === 1 ? 60 : clock.speed === 60 ? 600 : 1); showDemo(); }
   else if(k === 'r'){ clock.reset(); showDemo(); }
   else if(k === 'm'){ CONFIG.chime = !CONFIG.chime; if(CONFIG.chime) chime(); }
+  else if(k === 'h'){ testHadith(); }
   else if(e.key === 'ArrowRight'){ clock.offsetMs += 600000; showDemo(); }
   else if(e.key === 'ArrowLeft'){  clock.offsetMs -= 600000; showDemo(); }
   render();
