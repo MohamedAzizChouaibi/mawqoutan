@@ -11,11 +11,13 @@ A full-screen kiosk display of prayer times for the INSAT mosque (Centre Urbain 
 │   └── style.css         styles + @font-face declarations
 ├── js/
 │   ├── app.js            solar-time calculations, clock, rendering, settings panel
-│   ├── prayerTimes2026.js exact Mawaqit time table for 2026
-│   └── hadiths.js        authentic-hadith text bank for the between-prayers break
+│   └── prayerTimes2026.js exact Mawaqit time table for 2026
 └── assets/
     ├── fonts/             Noto Kufi Arabic (Arabic + Latin subsets, .woff2)
-    └── images/             INSAT logo
+    ├── images/             INSAT logo
+    └── data/
+        ├── mawaqit_prayer_times_2026.csv  source for prayerTimes2026.js
+        └── hadiths.csv                    hadith text bank for the between-prayers break
 ```
 
 ## Running locally
@@ -46,8 +48,16 @@ authentic (صحيح) hadith for one minute, then returns to the normal countdown
 It never interrupts the adhan, the prayer itself, or the last-5-minutes
 countdown. Tunable in `js/app.js`: `HADITH_GAP_MIN` (how close to the next
 prayer to stay quiet), `HADITH_SHOW_MS` (display duration), and
-`randHadithGapMs` (the 5–15 minute interval). The hadith text itself lives in
-`js/hadiths.js`.
+`randHadithGapMs` (the 5–15 minute interval).
+
+The hadiths themselves live in `assets/data/hadiths.csv` — four columns:
+`text`, `narrator`, `source`, `grade` (a short authenticity/attribution
+note; `narrator` may be left as `-` for hadiths with no specific narrator
+named). To add or edit hadiths, just edit that CSV and reload the page —
+it's fetched and parsed client-side at startup, no build step. This only
+works when the page is served over http(s) (`npm start` or any static
+server); opening `index.html` directly as a `file://` URL blocks the fetch,
+and the board simply runs with no hadith break.
 
 ## Keyboard shortcuts
 

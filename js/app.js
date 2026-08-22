@@ -404,12 +404,58 @@ function render(){
        stays up for one minute. Timed off clock.nowMs() (epoch ms, honours
        the demo-mode speed-up and manual offset) rather than the day's
        seconds-of-day clock, so it survives midnight cleanly.
+
+       The hadith text lives in assets/data/hadiths.csv (columns: text,
+       narrator, source, grade) and is loaded at startup with a plain
+       fetch — add a row there to add a hadith, no build step needed.
+       Requires the page to be served over http(s) (e.g. `npm start`);
+       under file:// the fetch is blocked by the browser and the board
+       simply runs with no hadith break.
    ════════════════════════════════════════════════════════════════════ */
 const HADITH_GAP_MIN = 20;                 // stay quiet this close to the next prayer
 const HADITH_SHOW_MS = 60*1000;            // how long each hadith stays on screen
 const randHadithGapMs = () => (5 + Math.random()*10)*60*1000;   // 5–15 minutes
 
 const hadith = { active:false, until:0, nextAt:0, lastIdx:-1 };
+let HADITHS = [];
+
+/* Minimal RFC4180 CSV parser — quoted fields, "" escapes, no external deps. */
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else if(c === '"') inQuotes = true;
+    else if(c === ',') { row.push(field); field = ''; }
+    else if(c === '\r') { /* ignore — \n ends the row */ }
+    else if(c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else field += c;
+  }
+  if(field !== '' || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+async function loadHadiths(){
+  try{
+    const res = await fetch('assets/data/hadiths.csv');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const rows = parseCSV(await res.text()).filter(r => r.some(v => v !== ''));
+    const header = rows.shift() || [];
+    const col = { text:header.indexOf('text'), narrator:header.indexOf('narrator'),
+                  source:header.indexOf('source'), grade:header.indexOf('grade') };
+    HADITHS = rows
+      .filter(r => r[col.text])
+      .map(r => ({ text:r[col.text], narrator:r[col.narrator]||'', source:r[col.source]||'', grade:r[col.grade]||'' }));
+  }catch(e){
+    console.warn('hadith break: could not load assets/data/hadiths.csv — serve the folder over http(s) (e.g. npm start), not file://', e);
+    HADITHS = [];
+  }
+}
 
 function hadithFontSize(len){
   if(len <= 100) return '56px';
@@ -420,7 +466,7 @@ function hadithFontSize(len){
 }
 
 function pickHadith(){
-  if(typeof HADITHS === 'undefined' || !HADITHS.length) return false;
+  if(!HADITHS.length) return false;
   let i = Math.floor(Math.random()*HADITHS.length);
   if(HADITHS.length > 1 && i === hadith.lastIdx) i = (i+1) % HADITHS.length;
   hadith.lastIdx = i;
@@ -540,6 +586,7 @@ addEventListener('mousemove', () => {
 
 /* ── go ──────────────────────────────────────────────────────────── */
 el.mosque.textContent = CONFIG.mosqueName;
+loadHadiths();
 fit();
 render();
 requestAnimationFrame(() => el.stage.classList.add('ready'));
